@@ -12,13 +12,16 @@ package com.jojoldu.book.freelecspringboot2webservice.service.posts;
 
 import com.jojoldu.book.freelecspringboot2webservice.domain.posts.Posts;
 import com.jojoldu.book.freelecspringboot2webservice.domain.posts.PostsRepository;
+import com.jojoldu.book.freelecspringboot2webservice.web.dto.PostsListResponseDto;
 import com.jojoldu.book.freelecspringboot2webservice.web.dto.PostsResponseDto;
 import com.jojoldu.book.freelecspringboot2webservice.web.dto.PostsSaveRequestDto;
 import com.jojoldu.book.freelecspringboot2webservice.web.dto.PostsUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 // 스프링에서 Bean을 주입받는 방식들 : @Autowired, setter, 생성자
@@ -65,5 +68,35 @@ public class PostsService {
         Posts entity = postsRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id = " + id));
 
         return new PostsResponseDto(entity);
+    }
+
+    // 전체 조회 화면 만들기
+    @Transactional(readOnly = true)
+    // findAllDesc 메소드의 트랜잭션 어노테이션(@Transactional)에 옵션이 하나 추가되었다.
+    // (readOnly = true)를 주면 트랜잭션 범위는 유지하되,
+    // 조회 기능만 남겨두어 조회 속도가 개선되기 때문에
+    // 등록, 수정, 삭제 기능이 전혀 없는 서비스 메소드에서 사용하는 것을 추천한다.
+    public List<PostsListResponseDto> findAllDesc() {
+        return postsRepository.findAllDesc().stream()
+                .map(PostsListResponseDto::new)
+                // .map(PostsListResponseDto::new)
+                // 위 코드는 실제로 다음과 같다.
+                // .map(posts -> new PostsListResponseDto(posts))
+                // postsRespository 결과로 넘어온 Posts의 Stream을 map을 통해
+                // PostsListResponseDto 변환 -> List로 반환하는 메소드이다.
+                .collect(Collectors.toList());
+    }
+
+    // 게시물 삭제
+    @Transactional
+    public void delete (Long id) {
+        Posts posts = postsRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 없습니다. id = " + id));
+
+        postsRepository.delete(posts);
+        // postsRepository.delete(posts);
+        // - JpaRepository에서 이미 delete 메소드를 지원하고 있으니 이를 활용한다.
+        // - 엔티티를 파라미터로 삭제할 수도 있고, deleteById 메소드를 이용하면 id로 삭제할 수도 있다.
+        // - 존재하는 Posts인지 확인을 위해 엔티티 조회 후 그대로 삭제한다.
     }
 }

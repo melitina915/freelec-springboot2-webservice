@@ -9,11 +9,14 @@
 package com.jojoldu.book.freelecspringboot2webservice.web;
 
 import com.jojoldu.book.freelecspringboot2webservice.service.posts.PostsService;
+import com.jojoldu.book.freelecspringboot2webservice.web.dto.PostsListResponseDto;
 import com.jojoldu.book.freelecspringboot2webservice.web.dto.PostsResponseDto;
 import com.jojoldu.book.freelecspringboot2webservice.web.dto.PostsSaveRequestDto;
 import com.jojoldu.book.freelecspringboot2webservice.web.dto.PostsUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 // 스프링에서 Bean을 주입받는 방식들 : @Autowired, setter, 생성자
@@ -26,26 +29,46 @@ import org.springframework.web.bind.annotation.*;
 // 해당 클래스의 의존성 관계가 변경될 때마다 생성자 코드를 계속해서 수정하는 번거로움을 해결하기 위해
 // 롬복 어노테이션이 있으면 해당 컨트롤러에 새로운 서비스를 추가하거나,
 // 기존 컴포넌트를 제거하는 등의 상황이 발생해도 생성자 코드는 전혀 손대지 않아도 된다.
+@RequestMapping("/api/v1/posts")
 @RestController
 public class PostsApiController {
 
     private final PostsService postsService;
 
     // 등록 기능
-    @PostMapping("/api/v1/posts")
+    //@PostMapping("/api/v1/posts")
+    @PostMapping
     public Long save(@RequestBody PostsSaveRequestDto requestDto) {
         return postsService.save(requestDto);
     }
 
     // 수정 기능
-    @PutMapping("/api/v1/posts/{id}")
+    //@PutMapping("/api/v1/posts/{id}")
+    @PutMapping("/{id}")
     public Long update(@PathVariable Long id, @RequestBody PostsUpdateRequestDto requestDto) {
         return postsService.update(id, requestDto);
     }
 
+    /*
     // 조회 기능
     @GetMapping("/api/v1/posts/{id}")
     public PostsResponseDto findById (@PathVariable Long id) {
         return postsService.findById(id);
+    }
+     */
+
+    // 삭제 기능
+    //@DeleteMapping("/api/v1/posts/{id}")
+    @DeleteMapping("/{id}")
+    public Long delete(@PathVariable Long id) {
+        postsService.delete(id);
+        return id;
+    }
+
+    //@GetMapping("/api/v1/posts")
+    //@GetMapping("/api/v1/posts/list")
+    @GetMapping
+    public List<PostsListResponseDto> getPostsList() {
+        return postsService.findAllDesc();
     }
 }

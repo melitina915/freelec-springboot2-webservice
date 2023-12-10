@@ -10,6 +10,9 @@
 package com.jojoldu.book.freelecspringboot2webservice.domain.posts;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
 
 // JPA Repository
 // 인터페이스로 생성한다.
@@ -23,4 +26,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 // Posts 클래스로 Database를 접근하게 해줄 JpaRepository
 public interface PostsRepository extends JpaRepository<Posts, Long> {
 
+    // 기존에 있던 PostsRepository 인터페이스에 쿼리가 추가된다.
+    @Query("SELECT p FROM Posts p ORDER BY p.id DESC")
+    // SpringDataJpa에서 제공하지 않는 메소드는 위처럼 @Query를 이용하여 쿼리로 작성해도 된다.
+    // 위 코드는 SpringDataJpa에서 제공하는 기본 메소드만으로 해결할 수 있다.
+    // 가독성은 @Query가 훨씬 좋다.
+    List<Posts> findAllDesc();
 }
