@@ -4,9 +4,18 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
+/*
 @EnableJpaAuditing
+ */
 // JPA Auditing 활성화
 // JPA Auditing 어노테이션들을 모두 활성화할 수 있도록 Application 클래스에 활성화 어노테이션 하나를 추가
+// @EnableJpaAuditing이 삭제됨
+// @EnableJpaAuditing을 사용하기 위해선 최소 하나의 @Entity 클래스가 필요하다.
+// @WebMvcTest이다 보니 당연히 없다.
+// @EnableJpaAuditing이 @SpringBootApplication과 함께 있다보니 @WebMvcTest에서도 스캔하게 된다.
+// 그래서 @EnableJpaAuditing과 @SpringBootApplication 둘을 분리하겠다.
+// Application.java에서 @EnableJpaAuditing을 제거한다.
+// 그리고 config 패키지에 JpaConfig를 생성하여 @EnableJpaAuditing을 추가한다.
 @SpringBootApplication
 // 스프링 부트의 자동 설정, 스프링 Bean 읽기와 생성을 모두 자동으로 설정
 // @SpringBootApplication이 있는 위치부터 설정을 읽는다
