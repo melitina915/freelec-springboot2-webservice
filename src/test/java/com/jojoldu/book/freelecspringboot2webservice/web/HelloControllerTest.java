@@ -1,9 +1,13 @@
 package com.jojoldu.book.freelecspringboot2webservice.web;
 
+import com.jojoldu.book.freelecspringboot2webservice.config.auth.SecurityConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -18,11 +22,24 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 // - 테스트를 진행할 때 JUnit에 내장된 실행자 외에 다른 실행자를 실행시킨다.
 // - 여기서는 SpringExtension이라는 스프링 실행자를 사용한다.
 // - 즉, 스프링 부트 테스트와 Junit 사이에 연결자 역할을 한다.
+/*
 @WebMvcTest(controllers = HelloController.class)
+ */
 // - 여러 스프링 테스트 어노테이션 중, Web(Spring MVC)에 집중할 수 있는 어노테이션
 // - 선언할 경우 @Controller, @ControllerAdvice 등을 사용할 수 있다.
 // - 단, @Service, @Component, @Repository 등은 사용할 수 없다.
 // - 여기서는 컨트롤러만 사용하기 때문에 선언한다.
+// @WebMvcTest는 CustomOAuth2UserService를 스캔하지 않는다.
+// @WebMvcTest는 WebSecurityConfigurerAdapter, WebMvcConfigurer를 비롯한 @ControllerAdvice, @Controller를 읽는다.
+// 즉, @Repository, @Service, @Component는 스캔 대상이 아니다.
+// 그러니 SecurityConfig는 읽었지만,
+// SecurityConfig를 생성하기 위해 필요한 CustomOAuth2UserService는 읽을수가 없어 앞에서와 같이 에러가 발생한 것이다.
+// 그래서 이 문제를 해결하기 위해 다음과 같이 스캔 대상에서 SecurityConfig를 제거한다.
+@WebMvcTest(controllers = HelloController.class, excludeFilters = {
+        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SecurityConfig.class)
+})
+// @WebMvcTest의 secure 옵션은 2.1부터 Deprecated 되었다.
+// 언제 삭제될지 모르니 사용하지 않는걸 추천한다.
 public class HelloControllerTest {
     @Autowired
     // - 스프링이 관리하는 빈(Bean)을 주입 받는다.
@@ -31,6 +48,8 @@ public class HelloControllerTest {
     // - 스프링 MVC 테스트의 시작점이다.
     // - 이 클래스를 통해 HTTP GET, POST 등에 대한 API 테스트를 할 수 있다.
 
+    @WithMockUser(roles = "USER")
+    // 여기서도 마찬가지로 @WithMockUser를 사용해서 가짜로 인증된 사용자를 생성한다.
     @Test
     public void hello가_리턴된다() throws Exception{
         String hello = "hello";
@@ -49,7 +68,11 @@ public class HelloControllerTest {
                 // - Controller에서 "hello"를 리턴하기 때문에 이 값이 맞는지 검증한다.
     }
 
+
+
     // JSON이 리턴되는 API 역시 정상적으로 테스트가 통과하는 것을 확인할 수 있다.
+    @WithMockUser(roles = "USER")
+    // 여기서도 마찬가지로 @WithMockUser를 사용해서 가짜로 인증된 사용자를 생성한다.
     @Test
     public void helloDto가_리턴된다() throws Exception {
         String name = "hello";
