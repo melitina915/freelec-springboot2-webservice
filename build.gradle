@@ -139,3 +139,9 @@ tasks.named('test') {
 
 
 // 윈도우에서 [Ctrl + Shift + A]를 사용해 Action 검색창을 열어 share project on github을 검색합니다.
+
+
+
+jar {
+	enabled=false
+}
