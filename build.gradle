@@ -42,7 +42,7 @@ repositories {
 // 이렇게 관리할 경우 각 라이브러리들의 버전 관리가 한 곳에 집중되고, 버전 충돌 문제도 해결되어 편하게 개발을 진행할 수 있습니다.
 dependencies {
 	// implementation 메소드 안에 라이브러리의 이름의 앞부분만 추가한 뒤 자동완성(Ctrl + Space)을 사용하면 해당 라이브러리들의 목록을 볼 수 있습니다.
-	//implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
 
